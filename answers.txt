@@ -1,0 +1,69 @@
+1)Find all the topics and tasks which are thought in the month of October
+
+db.topics.aggregate([
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "topicid",
+        foreignField: "topicid",
+        as: "task info",
+      },
+    },
+    {
+      $match: {
+        $and: [
+              { topic_date: { $gt: new Date("30-sep-2020") } },
+              { topic_date: { $lt: new Date("1-nov-2020") } },
+        ],
+      },
+    },
+  ]);
+  
+  2)Find all the company drives which appeared between 15 oct-2020 and 31-oct-2020
+  
+  db.company_drives.find({drive_date:{$gte: new Date("15-oct-2020"), $lte: new Date("31-oct-2020") }})
+  
+  3)Find all the company drives and students who are appeared for the placement.
+ 
+ db.company_drives.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "userid",
+        foreignField: "userid",
+        as: "student",
+      },
+    },{
+        $project:{
+            _id:0,
+            company:1,
+            drive_date:1,
+            "student.name":1,
+            "student.email":1
+        }
+    }
+  ]);
+  
+  4)Find the number of problems solved by the user in codekata
+  
+    db.codekata.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "userid",
+        foreignField: "userid",
+        as: "student",
+      },
+    }, {
+        $project:{
+            _id:0,
+            problems_solved:1,
+            "student.name":1,
+            "student.email":1
+        }
+    }
+  ]);
+  
+  5)Find all the mentors with who has the mentee's count more than 15
+  
+  db.mentors.find({class_count:{$gt:15}})
